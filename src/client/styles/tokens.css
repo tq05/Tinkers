@@ -1,0 +1,124 @@
+/* Tinkers design tokens — §A. CSS custom properties on :root + dark override. */
+
+:root {
+  /* A.1 Palette */
+  --bg: #f7f6fb;
+  --surface: #ffffff;
+  --surface-2: #f1eff8;
+  --fg: #2a2740;
+  --fg-muted: #726f88;
+  --border: #e6e3f0;
+  --primary: #7c4dff;
+  --primary-fg: #ffffff;
+  --primary-soft: #ece3ff;
+  --accent: #ffb24d;
+  --accent-2: #33c4d6;
+
+  /* Semantic / status */
+  --positive: #22b07d;
+  --running: #33c4d6;
+  --idle: #9aa0b4;
+  --warning: #f2a93b;
+  --negative: #f0506b;
+  --info: #4d8cff;
+
+  /* Categorical / avatar palette */
+  --chart-1: #7c4dff;
+  --chart-2: #33c4d6;
+  --chart-3: #ffb24d;
+  --chart-4: #f0506b;
+  --chart-5: #22b07d;
+  --chart-6: #4d8cff;
+
+  /* A.2 Radii */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* A.3 Spacing (4px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  /* A.4 Typography */
+  --font-sans: "Inter", "SF Pro Rounded", ui-rounded, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+
+  --lh-xs: 16px;
+  --lh-sm: 18px;
+  --lh-base: 22px;
+  --lh-lg: 26px;
+  --lh-xl: 30px;
+  --lh-2xl: 36px;
+  --lh-3xl: 44px;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* A.5 Elevation / shadows */
+  --shadow-sm: 0 1px 2px rgba(42, 39, 64, 0.06), 0 1px 3px rgba(42, 39, 64, 0.05);
+  --shadow-md: 0 4px 12px rgba(42, 39, 64, 0.08), 0 2px 4px rgba(42, 39, 64, 0.04);
+  --shadow-lg: 0 12px 32px rgba(42, 39, 64, 0.12), 0 4px 8px rgba(42, 39, 64, 0.06);
+  --shadow-glow-running: 0 0 0 3px color-mix(in oklch, var(--running) 22%, transparent);
+  --shadow-glow-tinkers: 0 8px 28px color-mix(in oklch, var(--accent) 40%, transparent);
+
+  /* A.6 Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 360ms;
+
+  /* Tinkers signature gradient */
+  --gradient-tinkers: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+}
+
+[data-theme="dark"] {
+  --bg: #15131f;
+  --surface: #1e1b2b;
+  --surface-2: #272338;
+  --fg: #eceaf4;
+  --fg-muted: #a09dba;
+  --border: #322e44;
+  --primary: #9a78ff;
+  --primary-fg: #ffffff;
+  --primary-soft: #2e2750;
+  --accent: #ffbe66;
+  --accent-2: #45d2e3;
+
+  --positive: #34c08e;
+  --running: #45d2e3;
+  --idle: #6f6c87;
+  --warning: #f5b955;
+  --negative: #ff6680;
+  --info: #6aa1ff;
+
+  --chart-1: #9a78ff;
+  --chart-2: #45d2e3;
+  --chart-3: #ffbe66;
+  --chart-4: #ff6680;
+  --chart-5: #34c08e;
+  --chart-6: #6aa1ff;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.3);
+}
