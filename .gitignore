@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.vite/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Bobbit runtime state (sessions, costs, auth token — never commit)
+.bobbit/state/
+
+# OS
+.DS_Store

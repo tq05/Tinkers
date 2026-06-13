@@ -1,0 +1,143 @@
+components:
+  - name: tinkers
+    repo: .
+    worktree_setup_command: npm ci --prefer-offline --no-audit --no-fund
+    commands:
+      build: npm run build
+      check: npm run check
+      unit: npm run test:unit
+      e2e: npm run test:e2e
+      dev: npm run dev
+      start: npm start
+    config:
+      qa_start_command: PORT=$PORT NODE_ENV=test npm start
+      qa_health_check: http://127.0.0.1:$PORT/api/health
+      qa_browser_entry: http://127.0.0.1:$PORT/
+      qa_max_duration_minutes: "10"
+      qa_max_scenarios: "5"
+workflows:
+  feature:
+    name: Feature
+    description: "Full design + implementation + multi-review + optional browser QA
+      for new agent/UI capabilities. The implementation gate is a Ralph loop:
+      its verify list re-runs every iteration until green."
+    gates:
+      - id: design-doc
+        name: Design Document
+        content: true
+        inject_downstream: true
+        verify:
+          - name: Design review
+            type: llm-review
+            role: architect
+            prompt: "Review this design document for the tinkers pi-harness web agent.
+              Assess structure, clarity, completeness, and that it addresses:
+              the pi subprocess lifecycle (spawn/supervise/kill via --mode
+              json/rpc over stdio), the Fastify backend API surface, the
+              WebSocket protocol between backend and browser, and the React+Vite
+              UI. Flag missing edge cases (process crashes, backpressure,
+              reconnection)."
+          - name: Design gap analysis
+            type: llm-review
+            role: spec-auditor
+            prompt: Compare this design doc against the goal spec ({{goal_spec}}). List
+              every requirement in the spec that the design does not yet
+              address. Focus on missing scope, not style.
+      - id: implementation
+        name: Implementation
+        depends_on:
+          - design-doc
+        description: "Ralph loop: build → check/unit/e2e → gap+code+security review →
+          optional browser QA. Re-runs on every iteration until all steps pass."
+        verify:
+          - name: Build tinkers
+            type: command
+            component: tinkers
+            command: build
+            timeout: 600
+          - name: Typecheck + lint
+            type: command
+            phase: 1
+            component: tinkers
+            command: check
+          - name: Unit tests
+            type: command
+            phase: 1
+            component: tinkers
+            command: unit
+          - name: E2E (browser)
+            type: command
+            phase: 1
+            component: tinkers
+            command: e2e
+            timeout: 900
+          - name: Implementation gap analysis
+            type: llm-review
+            role: spec-auditor
+            phase: 2
+            prompt: Compare the code changes on branch {{branch}} vs origin/{{master}}
+              against the goal spec ({{goal_spec}}) and the approved design doc.
+              List concrete code/behavior gaps relative to what was specified.
+              Ignore documentation gaps entirely — docs are handled in a later
+              gate.
+          - name: Code quality review
+            type: llm-review
+            role: code-reviewer
+            phase: 2
+            prompt: "Review the code changes on branch {{branch}} vs origin/{{master}} for
+              quality: correctness of the pi subprocess management, WebSocket
+              message handling and backpressure, error/crash handling, and React
+              component structure."
+          - name: Security review
+            type: llm-review
+            role: security-reviewer
+            phase: 2
+            prompt: "Review branch {{branch}} vs origin/{{master}} for security issues:
+              command injection via pi spawn args, unsanitized WebSocket input,
+              path traversal in any file-serving endpoints, secret/API-key
+              handling for the pi process, and unauthenticated access to the
+              agent control surface."
+          - name: Browser QA
+            type: agent-qa
+            role: qa-tester
+            component: tinkers
+            phase: 3
+            optional: true
+            optionalLabel: Enable browser QA
+            description: Spawn a QA agent that builds, starts the server
+              (config.qa_start_command), and drives a real browser through the
+              agent UI.
+            prompt: "Stand up the tinkers testbed via the component's
+              config.qa_start_command. Plan 3-5 scenarios that exercise the web
+              UI: start a pi agent session, send a prompt, observe streamed
+              output over WebSocket, and stop the session. Drive the browser and
+              submit verification_result."
+      - id: documentation
+        name: Documentation
+        depends_on:
+          - implementation
+        verify:
+          - name: Documentation coverage
+            type: llm-review
+            prompt: Confirm every user-facing change on branch {{branch}} is documented.
+              Prefer docs/ for detailed behavior (WS protocol, pi integration,
+              API endpoints) and README.md for setup/run orientation. Confirm
+              the dev workflow (npm run dev) and required env (PI on PATH, API
+              key) are documented.
+      - id: ready-to-merge
+        name: Ready to Merge
+        depends_on:
+          - documentation
+        verify:
+          - name: Branch pushed to remote
+            type: command
+            run: git push origin {{branch}}:refs/heads/{{branch}} && git ls-remote --heads
+              origin {{branch}} | grep -q .
+          - name: Master merged into branch
+            type: command
+            run: git fetch origin {{master}} && git merge-base --is-ancestor
+              origin/{{master}} {{branch}}
+          - name: PR raised
+            type: command
+            run: gh pr list --head {{branch}} --base {{master}} --state open --json url -q
+              ".[0].url" | grep -q .
