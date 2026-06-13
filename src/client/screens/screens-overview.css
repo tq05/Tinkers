@@ -1,0 +1,358 @@
+/* Wave 2 — Home, Project & Global Agents screens.
+   Friendly/colorful/playful: rounded cards, generous whitespace.
+   Style only via design tokens (var(--…)). */
+
+/* ── shared screen scaffold ─────────────────────────────────────────────── */
+.tk-screen {
+  padding: var(--sp-6) var(--sp-6) var(--sp-8);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tk-screen__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-6);
+}
+
+.tk-screen__greeting {
+  font-size: var(--text-3xl, 36px);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--fg);
+}
+
+.tk-screen__sub {
+  margin: var(--sp-2) 0 0;
+  color: var(--fg-muted);
+  font-size: var(--text-base, 15px);
+}
+
+.tk-screen__actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.tk-section {
+  margin-top: var(--sp-7);
+}
+
+.tk-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.tk-section__title {
+  font-size: var(--text-xl, 22px);
+  font-weight: 700;
+  margin: 0;
+  color: var(--fg);
+}
+
+.tk-section__count {
+  color: var(--fg-muted);
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+}
+
+.tk-link-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-sm);
+}
+.tk-link-btn:hover {
+  background: var(--primary-soft);
+}
+
+/* ── responsive grids ───────────────────────────────────────────────────── */
+.tk-grid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.tk-strip {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* ── card content building blocks ───────────────────────────────────────── */
+.tk-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+.tk-card-title {
+  font-size: var(--text-lg, 18px);
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.tk-card-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.tk-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tk-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs, 12px);
+  color: var(--fg-muted);
+}
+
+/* chips: repo path, branch, model, etc. */
+.tk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--fg-muted);
+  font-size: var(--text-xs, 12px);
+  font-weight: 500;
+  max-width: 100%;
+}
+.tk-chip--mono {
+  font-family: var(--font-mono);
+}
+
+.tk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+}
+
+.tk-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  color: var(--fg-muted);
+  font-size: var(--text-sm, 13px);
+}
+.tk-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tk-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+/* ── activity strip (running sessions) ──────────────────────────────────── */
+.tk-activity-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.tk-activity-card__top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.tk-activity-card__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs, 12px);
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Tinkers hero (Global Agents) ───────────────────────────────────────── */
+.tk-tinkers-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  padding: var(--sp-7);
+  color: #fff;
+  background: var(--gradient-tinkers);
+  box-shadow: var(--shadow-glow-tinkers);
+  display: flex;
+  gap: var(--sp-5);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.tk-tinkers-hero__body {
+  flex: 1;
+  min-width: 240px;
+}
+.tk-tinkers-hero__title {
+  font-size: var(--text-2xl, 28px);
+  font-weight: 700;
+  margin: 0 0 var(--sp-1);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.tk-tinkers-hero__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px var(--sp-3);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.22);
+  font-size: var(--text-xs, 12px);
+  font-weight: 600;
+  margin-bottom: var(--sp-3);
+}
+.tk-tinkers-hero__copy {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--text-base, 15px);
+  line-height: 1.5;
+  opacity: 0.95;
+  max-width: 56ch;
+}
+.tk-tinkers-hero__actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.tk-tinkers-hero__glow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.16);
+  flex: none;
+}
+
+/* "new" dashed CTA card */
+.tk-new-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 132px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color var(--dur, 200ms) var(--ease, ease),
+    color var(--dur, 200ms) var(--ease, ease),
+    background var(--dur, 200ms) var(--ease, ease);
+}
+.tk-new-card:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+.tk-new-card__plus {
+  font-size: var(--text-2xl, 28px);
+  line-height: 1;
+}
+
+/* ── project tabs body ──────────────────────────────────────────────────── */
+.tk-tabbody {
+  margin-top: var(--sp-5);
+}
+.tk-group {
+  margin-bottom: var(--sp-6);
+}
+.tk-group__label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm, 13px);
+  font-weight: 600;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--sp-3);
+}
+
+/* session list row */
+.tk-session-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.tk-session-row__preview {
+  margin: 2px 0 0;
+  color: var(--fg-muted);
+  font-size: var(--text-sm, 13px);
+}
+
+.tk-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+/* agent grid card */
+.tk-agent-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  height: 100%;
+}
+
+/* settings stub */
+.tk-settings-stub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.tk-settings-stub__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.tk-settings-stub__row:last-child {
+  border-bottom: none;
+}
+.tk-settings-stub__label {
+  color: var(--fg-muted);
+  font-size: var(--text-sm, 13px);
+}
+
+@media (max-width: 640px) {
+  .tk-screen {
+    padding: var(--sp-5) var(--sp-4) var(--sp-7);
+  }
+  .tk-screen__greeting {
+    font-size: var(--text-2xl, 28px);
+  }
+}
