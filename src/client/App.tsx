@@ -1,34 +1,25 @@
-import { useEffect, useState } from "react";
+// App root (§J). Mounts the provider stack and the app shell:
+//   MockStoreProvider > RouterProvider > TinkersProvider > AppShell + TinkersDock
+// Global styles are imported here so the whole tree is themed.
 
-interface Health {
-  status: string;
-  uptime: number;
-}
+import "./styles/tokens.css";
+import "./styles/global.css";
+
+import { MockStoreProvider } from "./mock/store";
+import { RouterProvider } from "./router/RouterContext";
+import { TinkersProvider } from "./components/tinkers/TinkersProvider";
+import { TinkersDock } from "./components/tinkers/TinkersDock";
+import { AppShell } from "./shell/AppShell";
 
 export function App() {
-  const [health, setHealth] = useState<Health | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch("/api/health")
-      .then((r) => r.json())
-      .then(setHealth)
-      .catch((e) => setError(String(e)));
-  }, []);
-
   return (
-    <main style={{ fontFamily: "system-ui, sans-serif", padding: "2rem" }}>
-      <h1>Tinkers</h1>
-      <p>Web harness for the pi coding agent.</p>
-      {error && <p style={{ color: "crimson" }}>Backend error: {error}</p>}
-      {health ? (
-        <p>
-          Backend status: <strong>{health.status}</strong> (uptime{" "}
-          {health.uptime.toFixed(1)}s)
-        </p>
-      ) : (
-        !error && <p>Checking backend…</p>
-      )}
-    </main>
+    <MockStoreProvider>
+      <RouterProvider>
+        <TinkersProvider>
+          <AppShell />
+          <TinkersDock />
+        </TinkersProvider>
+      </RouterProvider>
+    </MockStoreProvider>
   );
 }

@@ -1,0 +1,324 @@
+/* App shell + sidebar styles (§B.1). Tokens only — no hardcoded colors. */
+
+.tk-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.tk-shell__main {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────── */
+.tk-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: var(--sp-3);
+  gap: var(--sp-2);
+}
+
+.tk-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-2) var(--sp-1);
+}
+
+.tk-sidebar__brand-mark {
+  font-size: var(--text-xl);
+}
+
+.tk-sidebar__brand-name {
+  font-weight: var(--fw-bold);
+  font-size: var(--text-lg);
+  color: var(--fg);
+}
+
+.tk-sidebar__top {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tk-sidebar__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding-top: var(--sp-2);
+}
+
+.tk-sidebar__section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tk-sidebar__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.tk-sidebar__add {
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: var(--text-lg);
+  line-height: 1;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.tk-sidebar__add:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.tk-sidebar__empty {
+  padding: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+
+/* ── Nav items ────────────────────────────────────────────────────────── */
+.tk-navitem {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.tk-navitem:hover {
+  background: var(--surface-2);
+}
+
+.tk-navitem.is-active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: var(--fw-semibold);
+}
+
+.tk-navitem--sub {
+  font-size: var(--text-sm);
+}
+
+.tk-navitem__ico {
+  width: 20px;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: var(--text-base);
+}
+
+.tk-navitem__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Global agent rows ────────────────────────────────────────────────── */
+.tk-agentrow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-md);
+  transition: background var(--dur) var(--ease);
+}
+
+.tk-agentrow:hover {
+  background: var(--surface-2);
+}
+
+.tk-agentrow.is-active {
+  background: var(--primary-soft);
+}
+
+.tk-agentrow.is-tinkers {
+  background: color-mix(in oklch, var(--accent) 12%, transparent);
+}
+
+.tk-agentrow.is-tinkers:hover {
+  background: color-mix(in oklch, var(--accent) 20%, transparent);
+}
+
+.tk-agentrow__name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+}
+
+.tk-agentrow__star {
+  color: var(--accent);
+  font-size: var(--text-xs);
+}
+
+/* ── Project tree ─────────────────────────────────────────────────────── */
+.tk-tree {
+  display: flex;
+  flex-direction: column;
+}
+
+.tk-tree__row {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+}
+
+.tk-tree__row.is-active {
+  background: var(--primary-soft);
+}
+
+.tk-tree__toggle {
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  padding: var(--sp-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tk-tree__caret {
+  display: inline-block;
+  transition: transform var(--dur) var(--ease);
+  font-size: var(--text-xs);
+}
+
+.tk-tree__caret.is-open {
+  transform: rotate(90deg);
+}
+
+.tk-tree__name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) 0;
+  font-size: var(--text-base);
+  text-align: left;
+}
+
+.tk-tree__row.is-active .tk-tree__name {
+  color: var(--primary);
+  font-weight: var(--fw-semibold);
+}
+
+.tk-tree__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tk-tree__count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+
+.tk-tree__children {
+  display: flex;
+  flex-direction: column;
+  margin-left: var(--sp-5);
+  border-left: 1px solid var(--border);
+  padding-left: var(--sp-2);
+}
+
+.tk-tree__empty {
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+
+.tk-tree__sub {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.tk-tree__sub:hover {
+  background: var(--surface-2);
+  color: var(--fg);
+}
+
+.tk-tree__sub.is-active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: var(--fw-medium);
+}
+
+.tk-tree__sub-ico {
+  flex-shrink: 0;
+}
+
+.tk-tree__sub-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Responsive: icon-ish rail on narrow viewports ────────────────────── */
+@media (max-width: 980px) {
+  .tk-shell {
+    grid-template-columns: 220px 1fr;
+  }
+}

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tinkers — Pi Agent Harness UI · Prototype</title>
+<!--
+  Tinkers — visual source of truth for the Pi Agent Harness UI.
+  Self-contained: inline CSS + vanilla JS, no external dependencies.
+  Demonstrates: app shell (sidebar: Projects + Global agents), Home dashboard,
+  Live agent session view (chat + tool calls + usage + file tree, with running/streaming
+  states), and the Tinkers persistent dock + quick-ask command overlay (Cmd/Ctrl+K).
+  Mock data only — no backend. This locks look & feel for the React scaffold.
+-->
+<style>
+  :root {
+    --bg:#f7f6fb; --surface:#ffffff; --surface-2:#f1eff8;
+    --fg:#2a2740; --fg-muted:#726f88; --border:#e6e3f0;
+    --primary:#7c4dff; --primary-fg:#ffffff; --primary-soft:#ece3ff;
+    --accent:#ffb24d; --accent-2:#33c4d6;
+    --positive:#22b07d; --running:#33c4d6; --idle:#9aa0b4;
+    --warning:#f2a93b; --negative:#f0506b; --info:#4d8cff;
+    --chart-1:#7c4dff; --chart-2:#33c4d6; --chart-3:#ffb24d;
+    --chart-4:#f0506b; --chart-5:#22b07d; --chart-6:#4d8cff;
+    --radius-xs:6px; --radius-sm:10px; --radius-md:14px;
+    --radius-lg:20px; --radius-xl:28px; --radius-pill:999px;
+    --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px; --sp-7:48px;
+    --shadow-sm:0 1px 2px rgba(42,39,64,.06),0 1px 3px rgba(42,39,64,.05);
+    --shadow-md:0 4px 12px rgba(42,39,64,.08),0 2px 4px rgba(42,39,64,.04);
+    --shadow-lg:0 12px 32px rgba(42,39,64,.12),0 4px 8px rgba(42,39,64,.06);
+    --font-sans:"Inter","SF Pro Rounded",ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --ease:cubic-bezier(.2,.7,.3,1);
+  }
+  [data-theme="dark"]{
+    --bg:#16141f; --surface:#1f1c2b; --surface-2:#272336;
+    --fg:#ece9f5; --fg-muted:#a39fb8; --border:#322d44;
+    --primary-soft:#2e2553;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:var(--font-sans); background:var(--bg); color:var(--fg);
+    font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-thumb{background:color-mix(in oklch,var(--fg-muted) 30%,transparent);border-radius:99px;border:2px solid transparent;background-clip:content-box;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  /* ---------- layout ---------- */
+  .app{display:grid;grid-template-columns:264px 1fr;height:100vh;overflow:hidden;}
+  .sidebar{
+    background:var(--surface);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;min-height:0;position:relative;
+  }
+  .sb-brand{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-5) var(--sp-4) var(--sp-4);}
+  .sb-logo{width:34px;height:34px;border-radius:var(--radius-md);
+    background:linear-gradient(135deg,var(--accent),var(--primary));
+    display:grid;place-items:center;font-size:18px;box-shadow:var(--shadow-sm);}
+  .sb-brand h1{font-size:18px;font-weight:700;margin:0;letter-spacing:-.02em;}
+  .sb-brand .sub{font-size:11px;color:var(--fg-muted);font-weight:500;}
+  .sb-scroll{flex:1;overflow-y:auto;padding:0 var(--sp-3) var(--sp-3);min-height:0;}
+  .nav-item{display:flex;align-items:center;gap:var(--sp-3);width:100%;text-align:left;
+    padding:9px var(--sp-3);border-radius:var(--radius-md);font-size:14px;font-weight:500;
+    color:var(--fg);transition:background var(--ease) .15s;}
+  .nav-item:hover{background:var(--surface-2);}
+  .nav-item.active{background:var(--primary-soft);color:var(--primary);font-weight:600;}
+  .nav-ico{width:20px;text-align:center;font-size:15px;flex-shrink:0;}
+  .sb-section{display:flex;align-items:center;justify-content:space-between;
+    padding:var(--sp-4) var(--sp-3) var(--sp-2);font-size:11px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted);}
+  .sb-add{width:22px;height:22px;border-radius:var(--radius-sm);display:grid;place-items:center;
+    color:var(--fg-muted);font-size:16px;}
+  .sb-add:hover{background:var(--surface-2);color:var(--primary);}
+  .proj-row{display:flex;align-items:center;gap:var(--sp-2);width:100%;padding:8px var(--sp-3);
+    border-radius:var(--radius-md);font-size:14px;color:var(--fg);transition:background .15s var(--ease);}
+  .proj-row:hover{background:var(--surface-2);}
+  .proj-row.active{background:var(--primary-soft);color:var(--primary);font-weight:600;}
+  .proj-dot{width:18px;display:grid;place-items:center;}
+  .proj-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .sub-row{padding-left:38px;font-size:13px;color:var(--fg-muted);}
+  .sub-row .proj-name{font-weight:500;}
+
+  /* status dot */
+  .dot{width:8px;height:8px;border-radius:99px;flex-shrink:0;display:inline-block;}
+  .dot.idle{background:var(--idle);}
+  .dot.running{background:var(--running);box-shadow:0 0 0 0 color-mix(in oklch,var(--running) 60%,transparent);animation:pulse 1.6s var(--ease) infinite;}
+  .dot.error{background:var(--negative);}
+  .dot.done{background:var(--positive);}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in oklch,var(--running) 55%,transparent);}70%{box-shadow:0 0 0 7px color-mix(in oklch,var(--running) 0%,transparent);}100%{box-shadow:0 0 0 0 transparent;}}
+  @media (prefers-reduced-motion:reduce){.dot.running{animation:none;}}
+
+  /* tinkers dock */
+  .dock{position:absolute;left:var(--sp-3);right:var(--sp-3);bottom:var(--sp-3);}
+  .dock-btn{width:100%;display:flex;align-items:center;gap:var(--sp-3);padding:11px var(--sp-4);
+    border-radius:var(--radius-pill);color:#fff;font-weight:600;font-size:14px;
+    background:linear-gradient(135deg,var(--accent),var(--primary));
+    box-shadow:0 8px 28px color-mix(in oklch,var(--accent) 40%,transparent);transition:transform .15s var(--ease);}
+  .dock-btn:hover{transform:translateY(-2px);}
+  .dock-btn .kbd{margin-left:auto;}
+  .kbd{font-family:var(--font-mono);font-size:11px;padding:2px 6px;border-radius:6px;
+    background:rgba(255,255,255,.22);font-weight:600;}
+
+  /* ---------- main ---------- */
+  .main{overflow-y:auto;min-height:0;display:flex;flex-direction:column;}
+  .page{padding:var(--sp-6) var(--sp-7);max-width:1180px;width:100%;margin:0 auto;}
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4);margin-bottom:var(--sp-5);}
+  .page-head h2{font-size:28px;font-weight:700;margin:0 0 4px;letter-spacing:-.02em;}
+  .page-head p{margin:0;color:var(--fg-muted);font-size:14px;}
+  .head-actions{display:flex;gap:var(--sp-2);flex-shrink:0;}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:var(--sp-2);padding:9px 16px;border-radius:var(--radius-pill);
+    font-weight:600;font-size:14px;transition:all .15s var(--ease);white-space:nowrap;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn.primary{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm);}
+  .btn.primary:hover{box-shadow:var(--shadow-md);}
+  .btn.secondary{background:var(--surface);color:var(--fg);border:1px solid var(--border);}
+  .btn.secondary:hover{background:var(--surface-2);}
+  .btn.ghost{color:var(--fg-muted);}
+  .btn.ghost:hover{background:var(--surface-2);color:var(--fg);}
+  .btn.danger{background:var(--negative);color:#fff;}
+  .btn.tinkers{background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;
+    box-shadow:0 6px 20px color-mix(in oklch,var(--accent) 35%,transparent);}
+  .btn.sm{padding:6px 12px;font-size:13px;}
+
+  /* badges */
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--radius-pill);
+    font-size:12px;font-weight:600;}
+  .badge.running{background:color-mix(in oklch,var(--running) 15%,transparent);color:#1a8a99;}
+  [data-theme="dark"] .badge.running{color:var(--running);}
+  .badge.idle{background:var(--surface-2);color:var(--fg-muted);}
+  .badge.error{background:color-mix(in oklch,var(--negative) 14%,transparent);color:var(--negative);}
+  .badge.done{background:color-mix(in oklch,var(--positive) 14%,transparent);color:#138a5f;}
+  .badge.full{background:color-mix(in oklch,var(--accent) 20%,transparent);color:#b9751a;}
+  [data-theme="dark"] .badge.full{color:var(--accent);}
+  .badge.ro{background:var(--surface-2);color:var(--fg-muted);}
+  .badge.model{background:var(--primary-soft);color:var(--primary);font-family:var(--font-mono);font-size:11px;}
+
+  /* avatar */
+  .avatar{border-radius:var(--radius-md);display:grid;place-items:center;flex-shrink:0;
+    font-size:18px;width:40px;height:40px;color:#fff;position:relative;}
+  .avatar.sm{width:30px;height:30px;font-size:15px;border-radius:var(--radius-sm);}
+  .avatar.lg{width:60px;height:60px;font-size:28px;border-radius:var(--radius-lg);}
+  .avatar.ring{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--accent);}
+
+  /* cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:var(--sp-5);box-shadow:var(--shadow-sm);transition:all .18s var(--ease);}
+  .card.interactive{cursor:pointer;}
+  .card.interactive:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:color-mix(in oklch,var(--primary) 30%,var(--border));}
+  .card.running-glow{box-shadow:var(--shadow-sm),0 0 0 2px color-mix(in oklch,var(--running) 30%,transparent);}
+  .grid{display:grid;gap:var(--sp-4);}
+  .grid.cols-3{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));}
+
+  /* activity strip */
+  .strip{display:flex;gap:var(--sp-3);overflow-x:auto;padding-bottom:var(--sp-2);margin-bottom:var(--sp-6);}
+  .strip .card{min-width:300px;padding:var(--sp-4);}
+  .section-label{font-size:13px;font-weight:700;color:var(--fg-muted);text-transform:uppercase;
+    letter-spacing:.06em;margin:0 0 var(--sp-3);display:flex;align-items:center;gap:var(--sp-2);}
+
+  .meta{font-size:13px;color:var(--fg-muted);}
+  .mono{font-family:var(--font-mono);font-size:12px;}
+  .repo-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;
+    background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-sm);color:var(--fg-muted);}
+  .stat{display:flex;flex-direction:column;}
+  .stat .v{font-size:20px;font-weight:700;}
+  .stat .l{font-size:12px;color:var(--fg-muted);}
+
+  /* ---------- session view ---------- */
+  .session{display:grid;grid-template-rows:auto 1fr;height:100%;min-height:0;}
+  .sess-head{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-4) var(--sp-5);
+    border-bottom:1px solid var(--border);background:var(--surface);}
+  .sess-head.tinkers{background:linear-gradient(100deg,color-mix(in oklch,var(--accent) 12%,var(--surface)),color-mix(in oklch,var(--primary) 12%,var(--surface)));}
+  .sess-head .ttl{font-weight:700;font-size:16px;}
+  .sess-head .spacer{flex:1;}
+  .sess-body{display:grid;grid-template-columns:230px 1fr 290px;min-height:0;}
+  .col{min-height:0;display:flex;flex-direction:column;border-right:1px solid var(--border);}
+  .col:last-child{border-right:none;border-left:1px solid var(--border);border-right:none;}
+  .panel-head{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4);
+    font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-muted);
+    border-bottom:1px solid var(--border);}
+  .panel-body{flex:1;overflow-y:auto;padding:var(--sp-3);min-height:0;}
+
+  /* file tree */
+  .tree-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:var(--radius-sm);
+    font-size:13px;cursor:pointer;}
+  .tree-row:hover{background:var(--surface-2);}
+  .tree-row.indent{padding-left:24px;}
+  .tree-row.indent2{padding-left:40px;}
+  .chg{width:7px;height:7px;border-radius:99px;margin-left:auto;}
+  .chg.added{background:var(--positive);} .chg.modified{background:var(--warning);} .chg.referenced{background:var(--primary);}
+
+  /* chat */
+  .chat{flex:1;overflow-y:auto;padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-4);min-height:0;}
+  .msg{display:flex;gap:var(--sp-3);max-width:88%;}
+  .msg.user{align-self:flex-end;flex-direction:row-reverse;}
+  .bubble{padding:11px 15px;border-radius:var(--radius-lg);font-size:14.5px;line-height:1.55;}
+  .msg.agent .bubble{background:var(--surface);border:1px solid var(--border);border-top-left-radius:6px;}
+  .msg.user .bubble{background:var(--primary-soft);color:var(--fg);border-top-right-radius:6px;}
+  .bubble code{font-family:var(--font-mono);font-size:12.5px;background:var(--surface-2);padding:1px 5px;border-radius:5px;}
+  .bubble pre{background:var(--surface-2);padding:12px;border-radius:var(--radius-sm);overflow-x:auto;margin:8px 0 2px;
+    font-family:var(--font-mono);font-size:12.5px;line-height:1.5;}
+  .think{display:flex;gap:4px;align-items:center;color:var(--fg-muted);font-size:13px;margin-bottom:6px;}
+  .think i{width:6px;height:6px;border-radius:99px;background:var(--running);display:inline-block;animation:bounce 1.2s infinite;}
+  .think i:nth-child(2){animation-delay:.15s;} .think i:nth-child(3){animation-delay:.3s;}
+  @keyframes bounce{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+  .caret{display:inline-block;width:7px;height:15px;background:var(--running);margin-left:2px;vertical-align:-2px;animation:blink 1s steps(2) infinite;border-radius:1px;}
+  @keyframes blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.think i,.caret{animation:none;} .caret{opacity:.6;}}
+  .tool-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-family:var(--font-mono);
+    background:color-mix(in oklch,var(--running) 12%,transparent);color:#1a8a99;padding:3px 9px;border-radius:var(--radius-pill);margin-top:6px;}
+  [data-theme="dark"] .tool-chip{color:var(--running);}
+
+  /* composer */
+  .composer{border-top:1px solid var(--border);padding:var(--sp-3) var(--sp-4);display:flex;gap:var(--sp-2);align-items:flex-end;background:var(--surface);}
+  .composer textarea{flex:1;resize:none;border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:10px 12px;font-family:inherit;font-size:14px;background:var(--bg);color:var(--fg);min-height:42px;}
+  .composer textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+
+  /* tool call rows */
+  .tc{border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 11px;margin-bottom:var(--sp-2);font-size:13px;}
+  .tc-head{display:flex;align-items:center;gap:8px;}
+  .tc-ico{width:24px;height:24px;border-radius:var(--radius-sm);display:grid;place-items:center;font-size:13px;background:var(--surface-2);}
+  .tc .name{font-family:var(--font-mono);font-size:12.5px;flex:1;}
+  .tc .dur{font-size:11px;color:var(--fg-muted);}
+  .spin{width:13px;height:13px;border:2px solid color-mix(in oklch,var(--running) 30%,transparent);border-top-color:var(--running);border-radius:99px;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* usage */
+  .usage-bar{height:10px;border-radius:99px;overflow:hidden;display:flex;background:var(--surface-2);margin:8px 0;}
+  .usage-bar i{display:block;height:100%;}
+  .usage-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);}
+
+  /* modal / overlay */
+  .scrim{position:fixed;inset:0;background:rgba(20,18,30,.45);backdrop-filter:blur(4px);
+    display:none;z-index:50;}
+  .scrim.open{display:block;}
+  .quickask{position:fixed;left:50%;top:14vh;transform:translateX(-50%);width:min(640px,92vw);z-index:60;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);
+    box-shadow:var(--shadow-lg),0 0 0 1px color-mix(in oklch,var(--accent) 30%,transparent);
+    display:none;overflow:hidden;}
+  .quickask.open{display:block;animation:drop .22s var(--ease);}
+  @keyframes drop{from{opacity:0;transform:translate(-50%,-12px);}to{opacity:1;transform:translate(-50%,0);}}
+  .qa-head{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-4) var(--sp-5);
+    background:linear-gradient(100deg,color-mix(in oklch,var(--accent) 14%,var(--surface)),color-mix(in oklch,var(--primary) 14%,var(--surface)));
+    border-bottom:1px solid var(--border);}
+  .qa-input{width:100%;border:none;background:transparent;font-size:18px;font-family:inherit;color:var(--fg);padding:var(--sp-2) 0;}
+  .qa-input:focus{outline:none;}
+  .qa-body{padding:var(--sp-4) var(--sp-5);}
+  .qa-ctx{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--surface-2);
+    padding:4px 10px;border-radius:var(--radius-pill);color:var(--fg-muted);margin-bottom:var(--sp-3);}
+  .qa-recent{font-size:13px;color:var(--fg-muted);}
+  .qa-recent div{padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;}
+  .qa-recent div:hover{background:var(--surface-2);color:var(--fg);}
+  .qa-foot{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-3) var(--sp-5);border-top:1px solid var(--border);
+    font-size:12px;color:var(--fg-muted);}
+  .qa-foot .kbd{background:var(--surface-2);color:var(--fg-muted);}
+  .qa-answer{background:var(--surface-2);border-radius:var(--radius-md);padding:var(--sp-4);margin-top:var(--sp-3);
+    font-size:14px;line-height:1.6;display:none;}
+  .qa-answer.show{display:block;}
+
+  .hidden{display:none !important;}
+  .theme-toggle{position:fixed;bottom:14px;right:16px;z-index:40;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-pill);padding:7px 14px;font-size:13px;font-weight:600;box-shadow:var(--shadow-md);color:var(--fg-muted);}
+  /* hint banner */
+  .hint{font-size:12px;color:var(--fg-muted);background:var(--primary-soft);color:var(--primary);
+    padding:6px 12px;border-radius:var(--radius-pill);display:inline-flex;gap:6px;align-items:center;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">✨</div>
+      <div>
+        <h1>Tinkers</h1>
+        <div class="sub">pi agent harness</div>
+      </div>
+    </div>
+    <div class="sb-scroll">
+      <button class="nav-item active" data-nav="home"><span class="nav-ico">⌂</span> Home</button>
+      <button class="nav-item" data-nav="settings"><span class="nav-ico">⚙</span> Settings</button>
+
+      <div class="sb-section">Projects <button class="sb-add" title="New project">+</button></div>
+      <button class="proj-row" data-nav="project"><span class="proj-dot"><span class="dot running"></span></span><span class="proj-name">Acme Web App</span><span class="meta mono">2</span></button>
+      <button class="sub-row proj-row" data-nav="session"><span class="proj-dot">💬</span><span class="proj-name">Fix checkout bug</span><span class="dot running"></span></button>
+      <button class="sub-row proj-row"><span class="proj-dot">💬</span><span class="proj-name">Add dark mode</span><span class="dot idle"></span></button>
+      <button class="proj-row"><span class="proj-dot"><span class="dot idle"></span></span><span class="proj-name">Data Pipeline</span><span class="meta mono">1</span></button>
+      <button class="proj-row"><span class="proj-dot"><span class="dot error"></span></span><span class="proj-name">Mobile Client</span><span class="meta mono">3</span></button>
+
+      <div class="sb-section">Global agents <button class="sb-add" title="New global agent">+</button></div>
+      <button class="proj-row" data-nav="tinkersSession"><span class="proj-dot">★</span><span class="proj-name" style="font-weight:600">Tinkers</span><span class="dot running"></span></button>
+      <button class="proj-row"><span class="proj-dot">🔎</span><span class="proj-name">Researcher</span><span class="dot idle"></span></button>
+      <button class="proj-row"><span class="proj-dot">📝</span><span class="proj-name">Doc Writer</span><span class="dot idle"></span></button>
+    </div>
+    <div class="dock">
+      <button class="dock-btn" id="dockBtn">✨ Ask Tinkers <span class="kbd">⌘K</span></button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main" id="main">
+
+    <!-- ---------- HOME ---------- -->
+    <section class="page screen" data-screen="home">
+      <div class="page-head">
+        <div>
+          <h2>Welcome back ✨</h2>
+          <p>3 projects · 2 sessions running right now</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn secondary">+ New agent</button>
+          <button class="btn primary">+ New project</button>
+        </div>
+      </div>
+
+      <h3 class="section-label"><span class="dot running"></span> Active right now</h3>
+      <div class="strip">
+        <div class="card running-glow interactive" data-nav="session">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="avatar sm" style="background:var(--chart-2)">🤖</div>
+            <div style="flex:1"><div style="font-weight:600">Fix checkout bug</div><div class="meta">Acme Web App</div></div>
+            <span class="badge running"><span class="dot running"></span>Running</span>
+          </div>
+          <div class="meta">Editing <code class="mono">src/checkout/cart.ts</code> · <span id="homeTokens">3,481</span> tokens</div>
+        </div>
+        <div class="card running-glow interactive" data-nav="tinkersSession">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="avatar sm ring" style="background:linear-gradient(135deg,var(--accent),var(--primary))">✨</div>
+            <div style="flex:1"><div style="font-weight:600">Tinkers</div><div class="meta">Global · god-mode</div></div>
+            <span class="badge running"><span class="dot running"></span>Running</span>
+          </div>
+          <div class="meta">Auditing dependencies across all projects…</div>
+        </div>
+      </div>
+
+      <h3 class="section-label">Your projects</h3>
+      <div class="grid cols-3" style="margin-bottom:var(--sp-6)">
+        <div class="card interactive" data-nav="project" style="border-top:4px solid var(--chart-1)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div class="avatar" style="background:var(--chart-1)">🌐</div>
+            <span class="badge running"><span class="dot running"></span>1 running</span>
+          </div>
+          <div style="font-weight:700;font-size:17px;margin-bottom:4px">Acme Web App</div>
+          <div class="repo-chip">📁 ~/code/acme-web</div>
+          <div class="meta" style="margin-top:12px">2 agents · 4 sessions · <span class="mono">main</span></div>
+        </div>
+        <div class="card interactive" style="border-top:4px solid var(--chart-2)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div class="avatar" style="background:var(--chart-2)">🗄️</div>
+            <span class="badge idle"><span class="dot idle"></span>Idle</span>
+          </div>
+          <div style="font-weight:700;font-size:17px;margin-bottom:4px">Data Pipeline</div>
+          <div class="repo-chip">📁 ~/code/data-pipe</div>
+          <div class="meta" style="margin-top:12px">1 agent · 2 sessions · <span class="mono">develop</span></div>
+        </div>
+        <div class="card interactive" style="border-top:4px solid var(--chart-4)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div class="avatar" style="background:var(--chart-4)">📱</div>
+            <span class="badge error">⚠ 1 error</span>
+          </div>
+          <div style="font-weight:700;font-size:17px;margin-bottom:4px">Mobile Client</div>
+          <div class="repo-chip">📁 ~/code/mobile</div>
+          <div class="meta" style="margin-top:12px">3 agents · 5 sessions · <span class="mono">main</span></div>
+        </div>
+      </div>
+
+      <h3 class="section-label">Global agents</h3>
+      <div class="card" style="display:flex;align-items:center;gap:var(--sp-4);background:linear-gradient(100deg,color-mix(in oklch,var(--accent) 12%,var(--surface)),color-mix(in oklch,var(--primary) 12%,var(--surface)))">
+        <div class="avatar lg ring" style="background:linear-gradient(135deg,var(--accent),var(--primary))">✨</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px">Tinkers <span class="badge full">God-mode · Full access</span></div>
+          <div class="meta">Your everything-agent. Not tied to a project — works across all of them.</div>
+        </div>
+        <button class="btn secondary sm" id="dockBtn2">Quick ask ⌘K</button>
+        <button class="btn tinkers" data-nav="tinkersSession">Open Tinkers</button>
+      </div>
+    </section>
+
+    <!-- ---------- PROJECT ---------- -->
+    <section class="page screen hidden" data-screen="project">
+      <div class="page-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:var(--chart-1)">🌐</div>
+            <div><h2 style="margin:0">Acme Web App</h2>
+            <div style="display:flex;gap:8px;margin-top:4px"><span class="repo-chip">📁 ~/code/acme-web</span><span class="repo-chip">🌿 main</span><span class="badge model">TypeScript</span></div></div>
+          </div>
+        </div>
+        <div class="head-actions"><button class="btn secondary">+ New agent</button><button class="btn primary" data-nav="session">+ New session</button></div>
+      </div>
+
+      <div style="display:flex;gap:6px;border-bottom:1px solid var(--border);margin-bottom:var(--sp-5)">
+        <button class="nav-item active" style="border-radius:0;border-bottom:2px solid var(--primary);width:auto">Sessions</button>
+        <button class="nav-item" style="border-radius:0;width:auto">Agents</button>
+        <button class="nav-item" style="border-radius:0;width:auto">Files</button>
+        <button class="nav-item" style="border-radius:0;width:auto">Settings</button>
+      </div>
+
+      <h3 class="section-label"><span class="dot running"></span> Running</h3>
+      <div class="card running-glow interactive" data-nav="session" style="margin-bottom:var(--sp-5);display:flex;align-items:center;gap:var(--sp-3)">
+        <div class="avatar" style="background:var(--chart-2)">🤖</div>
+        <div style="flex:1"><div style="font-weight:600">Fix checkout bug</div><div class="meta">“…patching the cart total rounding now” · 2m ago</div></div>
+        <span class="badge model">claude-3.7-sonnet</span>
+        <span class="badge running"><span class="dot running"></span>Running</span>
+      </div>
+
+      <h3 class="section-label">Recent sessions</h3>
+      <div class="grid" style="gap:var(--sp-2)">
+        <div class="card interactive" style="display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-4)">
+          <div class="avatar" style="background:var(--chart-1)">🤖</div>
+          <div style="flex:1"><div style="font-weight:600">Add dark mode</div><div class="meta">“Done — added theme toggle + tokens.” · 1h ago</div></div>
+          <span class="badge done"><span class="dot done"></span>Done</span>
+        </div>
+        <div class="card interactive" style="display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-4)">
+          <div class="avatar" style="background:var(--chart-4)">🐙</div>
+          <div style="flex:1"><div style="font-weight:600">Refactor API client</div><div class="meta">Stopped on error · 3h ago</div></div>
+          <span class="badge error">⚠ Error</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- SESSION (rendered by JS) ---------- -->
+    <section class="screen hidden" data-screen="session" style="height:100%"></section>
+    <section class="screen hidden" data-screen="tinkersSession" style="height:100%"></section>
+
+    <!-- ---------- SETTINGS ---------- -->
+    <section class="page screen hidden" data-screen="settings">
+      <div class="page-head"><div><h2>Settings</h2><p>Providers, models & appearance. (Mock — keys not stored in this prototype.)</p></div></div>
+      <h3 class="section-label">Providers & keys</h3>
+      <div class="grid" style="gap:var(--sp-3);margin-bottom:var(--sp-6)">
+        <div class="card" style="display:flex;align-items:center;gap:var(--sp-4)">
+          <div class="avatar" style="background:var(--chart-5)">A</div>
+          <div style="flex:1"><div style="font-weight:600">Anthropic</div><input class="mono" value="sk-ant-••••••••••••3f9a" readonly style="width:100%;border:1px solid var(--border);border-radius:var(--radius-md);padding:7px 11px;background:var(--bg);color:var(--fg-muted);margin-top:6px"></div>
+          <span class="badge done"><span class="dot done"></span>Connected</span>
+          <button class="btn secondary sm">Test</button>
+        </div>
+        <div class="card" style="display:flex;align-items:center;gap:var(--sp-4)">
+          <div class="avatar" style="background:var(--chart-6)">O</div>
+          <div style="flex:1"><div style="font-weight:600">OpenAI</div><input class="mono" placeholder="sk-…" style="width:100%;border:1px solid var(--border);border-radius:var(--radius-md);padding:7px 11px;background:var(--bg);color:var(--fg);margin-top:6px"></div>
+          <span class="badge idle"><span class="dot idle"></span>Not set</span>
+          <button class="btn secondary sm">Test</button>
+        </div>
+        <div class="card" style="display:flex;align-items:center;gap:var(--sp-4)">
+          <div class="avatar" style="background:var(--chart-3)">G</div>
+          <div style="flex:1"><div style="font-weight:600">Google</div><input class="mono" placeholder="AIza…" style="width:100%;border:1px solid var(--border);border-radius:var(--radius-md);padding:7px 11px;background:var(--bg);color:var(--fg);margin-top:6px"></div>
+          <span class="badge idle"><span class="dot idle"></span>Not set</span>
+          <button class="btn secondary sm">Test</button>
+        </div>
+      </div>
+      <h3 class="section-label">Appearance</h3>
+      <div class="card" style="display:flex;align-items:center;gap:var(--sp-4)">
+        <div style="flex:1"><div style="font-weight:600">Theme</div><div class="meta">Light, dark, or follow system.</div></div>
+        <button class="btn secondary sm" onclick="toggleTheme()">Toggle light / dark</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== TINKERS QUICK-ASK OVERLAY ===================== -->
+<div class="scrim" id="scrim"></div>
+<div class="quickask" id="quickask">
+  <div class="qa-head">
+    <div class="avatar sm ring" style="background:linear-gradient(135deg,var(--accent),var(--primary))">✨</div>
+    <input class="qa-input" id="qaInput" placeholder="Ask Tinkers anything…" autocomplete="off">
+  </div>
+  <div class="qa-body">
+    <span class="qa-ctx">📎 Context: Acme Web App · Fix checkout bug</span>
+    <div class="qa-recent" id="qaRecent">
+      <div>↻ Why is the checkout total off by a cent?</div>
+      <div>↻ Summarise what changed across all projects today</div>
+      <div>↻ Generate release notes for v2.1</div>
+    </div>
+    <div class="qa-answer" id="qaAnswer"></div>
+  </div>
+  <div class="qa-foot">
+    <span class="kbd">↵</span> send <span class="kbd">⇧↵</span> open full session <span class="kbd">esc</span> close
+    <span style="margin-left:auto" class="badge full">God-mode</span>
+  </div>
+</div>
+
+<button class="theme-toggle" onclick="toggleTheme()">◐ theme</button>
+
+<script>
+// ---------- mock session data ----------
+function sessionHTML(opts){
+  const t = opts.tinkers;
+  return `
+  <div class="session">
+    <div class="sess-head ${t?'tinkers':''}">
+      <div class="avatar ${t?'ring':''}" style="background:${t?'linear-gradient(135deg,var(--accent),var(--primary))':'var(--chart-2)'}">${t?'✨':'🤖'}</div>
+      <div>
+        <div class="ttl">${t?'Tinkers':'Fix checkout bug'}</div>
+        <div class="meta">${t?'Global · god-mode':'Acme Web App'}</div>
+      </div>
+      <span class="badge model">${t?'claude-opus-4':'claude-3.7-sonnet'}</span>
+      <span class="badge ${t?'full':'ro'}">${t?'⚡ Full access':'🔒 Read-only'}</span>
+      <span class="spacer"></span>
+      <span class="badge running"><span class="dot running"></span>Running</span>
+      <button class="btn danger sm">■ Stop</button>
+    </div>
+    <div class="sess-body">
+      <!-- file tree -->
+      <div class="col">
+        <div class="panel-head">📂 Workspace ${t?'· all projects':''}</div>
+        <div class="panel-body">
+          <div class="tree-row">📁 src</div>
+          <div class="tree-row indent">📁 checkout</div>
+          <div class="tree-row indent2">📄 cart.ts <span class="chg modified"></span></div>
+          <div class="tree-row indent2">📄 total.ts <span class="chg referenced"></span></div>
+          <div class="tree-row indent">📁 components</div>
+          <div class="tree-row indent">📄 App.tsx</div>
+          <div class="tree-row">📄 package.json</div>
+          <div class="tree-row">📄 README.md <span class="chg added"></span></div>
+        </div>
+      </div>
+      <!-- chat -->
+      <div class="col" style="border-right:1px solid var(--border)">
+        <div class="chat" id="chat">
+          <div class="msg user"><div class="bubble">The checkout total is off by a cent on multi-item carts. Can you find and fix it?</div></div>
+          <div class="msg agent">
+            <div class="avatar sm" style="background:${t?'linear-gradient(135deg,var(--accent),var(--primary))':'var(--chart-2)'}">${t?'✨':'🤖'}</div>
+            <div class="bubble">Found it — we're rounding each line item before summing, which compounds rounding error. The fix is to sum in integer cents and round once at the end.
+            <div class="tool-chip">📖 read src/checkout/cart.ts <span style="color:var(--positive)">✓ 0.4s</span></div>
+            <div class="tool-chip">✏️ edit src/checkout/total.ts <span style="color:var(--positive)">✓ 0.9s</span></div>
+            </div>
+          </div>
+          <div class="msg agent">
+            <div class="avatar sm" style="background:${t?'linear-gradient(135deg,var(--accent),var(--primary))':'var(--chart-2)'}">${t?'✨':'🤖'}</div>
+            <div class="bubble">
+              <div class="think"><i></i><i></i><i></i> running tests…</div>
+              Applied the patch. Now verifying with the cart test suite<span class="caret"></span>
+              <div class="tool-chip">⚡ bash npm test -- cart <span class="spin" style="margin-left:4px"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="composer">
+          <textarea placeholder="Reply to the agent…  (Send is disabled while running)"></textarea>
+          <button class="btn danger">■ Stop</button>
+        </div>
+      </div>
+      <!-- right rail -->
+      <div class="col">
+        <div class="panel-head">🔧 Tool calls <span class="badge running" style="margin-left:auto"><span class="dot running"></span>1</span></div>
+        <div class="panel-body" style="flex:0 0 auto;max-height:46%">
+          <div class="tc"><div class="tc-head"><div class="tc-ico">⚡</div><span class="name">bash npm test</span><span class="spin"></span></div></div>
+          <div class="tc"><div class="tc-head"><div class="tc-ico">✏️</div><span class="name">edit total.ts</span><span style="color:var(--positive)">✓</span><span class="dur">0.9s</span></div></div>
+          <div class="tc"><div class="tc-head"><div class="tc-ico">📖</div><span class="name">read cart.ts</span><span style="color:var(--positive)">✓</span><span class="dur">0.4s</span></div></div>
+        </div>
+        <div class="panel-head" style="border-top:1px solid var(--border)">📊 Usage</div>
+        <div class="panel-body">
+          <div class="usage-bar"><i style="width:62%;background:var(--chart-1)"></i><i style="width:38%;background:var(--chart-2)"></i></div>
+          <div class="usage-grid">
+            <div class="stat"><span class="v" id="inTok">2,140</span><span class="l">input tokens</span></div>
+            <div class="stat"><span class="v" id="outTok">1,341</span><span class="l">output tokens</span></div>
+            <div class="stat"><span class="v" id="totTok">3,481</span><span class="l">total</span></div>
+            <div class="stat"><span class="v" id="cost">$0.041</span><span class="l">est. cost</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ---------- navigation ----------
+const screens = document.querySelectorAll('.screen');
+function show(name){
+  screens.forEach(s=>s.classList.toggle('hidden', s.dataset.screen!==name));
+  if(name==='session') document.querySelector('[data-screen="session"]').innerHTML = sessionHTML({tinkers:false});
+  if(name==='tinkersSession') document.querySelector('[data-screen="tinkersSession"]').innerHTML = sessionHTML({tinkers:true});
+  document.querySelectorAll('.nav-item[data-nav]').forEach(n=>n.classList.toggle('active', n.dataset.nav===name));
+  document.getElementById('main').scrollTop=0;
+}
+document.querySelectorAll('[data-nav]').forEach(el=>{
+  el.addEventListener('click', ()=>show(el.dataset.nav));
+});
+
+// ---------- live ticking usage (running-state demo) ---------
+setInterval(()=>{
+  const el=document.getElementById('totTok'); if(!el) return;
+  const inT=document.getElementById('inTok'), outT=document.getElementById('outTok'), c=document.getElementById('cost');
+  let i=parseInt(inT.textContent.replace(/,/g,''))+Math.floor(Math.random()*8);
+  let o=parseInt(outT.textContent.replace(/,/g,''))+Math.floor(Math.random()*22);
+  inT.textContent=i.toLocaleString(); outT.textContent=o.toLocaleString();
+  el.textContent=(i+o).toLocaleString();
+  c.textContent='$'+((i+o)*0.0000118).toFixed(3);
+  const h=document.getElementById('homeTokens'); if(h) h.textContent=(i+o).toLocaleString();
+}, 900);
+
+// ---------- Tinkers quick-ask overlay ----------
+const scrim=document.getElementById('scrim'), qa=document.getElementById('quickask'), qaIn=document.getElementById('qaInput');
+const qaAns=document.getElementById('qaAnswer'), qaRecent=document.getElementById('qaRecent');
+function openQA(){scrim.classList.add('open');qa.classList.add('open');qaAns.classList.remove('show');qaRecent.style.display='';qaIn.value='';setTimeout(()=>qaIn.focus(),50);}
+function closeQA(){scrim.classList.remove('open');qa.classList.remove('open');}
+document.getElementById('dockBtn').addEventListener('click',openQA);
+document.getElementById('dockBtn2').addEventListener('click',openQA);
+scrim.addEventListener('click',closeQA);
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();qa.classList.contains('open')?closeQA():openQA();}
+  if(e.key==='Escape')closeQA();
+});
+qaIn.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    const q=qaIn.value.trim(); if(!q) return;
+    qaRecent.style.display='none';
+    qaAns.classList.add('show');
+    qaAns.innerHTML='<div class="think"><i></i><i></i><i></i> Tinkers is thinking…</div>';
+    let txt="On it — scanning the workspace"; let full="On it — I checked the cart total logic across the project. The bug is in line-item rounding; I'd sum in integer cents and round once. Want me to open a full session and patch it?";
+    let n=0; qaAns.innerHTML='';
+    const stream=setInterval(()=>{
+      n+=2; qaAns.innerHTML=full.slice(0,n)+'<span class="caret"></span>';
+      if(n>=full.length){clearInterval(stream);qaAns.innerHTML=full+'<div style="margin-top:12px"><button class="btn tinkers sm" onclick="closeQA();show(\'tinkersSession\')">Continue in full session →</button></div>';}
+    },18);
+  }
+  if(e.key==='Enter'&&e.shiftKey){e.preventDefault();closeQA();show('tinkersSession');}
+});
+
+function toggleTheme(){
+  const r=document.documentElement;
+  r.dataset.theme = r.dataset.theme==='dark'?'light':'dark';
+}
+</script>
+</body>
+</html>
