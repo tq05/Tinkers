@@ -1,0 +1,486 @@
+/* Session view styles (§C.3, §D, §H). All colors via tokens. */
+
+/* ── SessionScreen layout ──────────────────────────────────────────────────── */
+.tk-session {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.tk-session__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+}
+.tk-session__id {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+.tk-session__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.tk-session__title {
+  font-size: var(--text-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-session__sub {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+  flex-wrap: wrap;
+}
+.tk-session__spacer {
+  flex: 1;
+}
+.tk-session__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.tk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+}
+
+.tk-session__body {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr) 320px;
+  flex: 1;
+  min-height: 0;
+}
+.tk-session__col {
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.tk-session__col--left {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+.tk-session__col--right {
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+}
+.tk-session__col-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--fg);
+  border-bottom: 1px solid var(--border);
+}
+.tk-session__col-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--sp-2);
+}
+.tk-session__rail-tabs {
+  padding: 0 var(--sp-3);
+}
+
+/* ── Center transcript ─────────────────────────────────────────────────────── */
+.tk-session__center {
+  background: var(--bg);
+}
+.tk-transcript {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.tk-transcript__jump {
+  position: absolute;
+  bottom: var(--sp-4);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+/* ── Drawer toggles (narrow viewports) ─────────────────────────────────────── */
+.tk-session__drawer-toggle {
+  display: none;
+}
+.tk-session__scrim {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .tk-session__body {
+    grid-template-columns: minmax(0, 1fr);
+    position: relative;
+  }
+  .tk-session__col--left,
+  .tk-session__col--right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 20;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(0);
+    transition: transform var(--dur) var(--ease);
+  }
+  .tk-session__col--left {
+    left: 0;
+  }
+  .tk-session__col--right {
+    right: 0;
+    width: 320px;
+  }
+  .tk-session__col--left[data-open="false"] {
+    transform: translateX(-110%);
+  }
+  .tk-session__col--right[data-open="false"] {
+    transform: translateX(110%);
+  }
+  .tk-session__drawer-toggle {
+    display: inline-flex;
+  }
+  .tk-session__scrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 18, 30, 0.28);
+    backdrop-filter: blur(2px);
+    z-index: 15;
+  }
+}
+
+/* ── MessageBubble (§D.1) ──────────────────────────────────────────────────── */
+.tk-msg {
+  display: flex;
+  gap: var(--sp-3);
+  max-width: 760px;
+}
+.tk-msg--user {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+.tk-msg--agent {
+  align-self: flex-start;
+}
+.tk-msg--system {
+  align-self: center;
+  max-width: 560px;
+}
+.tk-msg__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.tk-msg--user .tk-msg__body {
+  align-items: flex-end;
+}
+.tk-msg__bubble {
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+  word-break: break-word;
+}
+.tk-msg--user .tk-msg__bubble {
+  background: var(--primary-soft);
+  border-top-right-radius: var(--radius-sm);
+}
+.tk-msg--agent .tk-msg__bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top-left-radius: var(--radius-sm);
+}
+.tk-msg--system .tk-msg__bubble {
+  background: var(--surface-2);
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+  box-shadow: none;
+}
+.tk-msg__meta {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  padding: 0 var(--sp-1);
+}
+.tk-msg__bubble p {
+  margin: 0 0 var(--sp-2);
+}
+.tk-msg__bubble p:last-child {
+  margin-bottom: 0;
+}
+.tk-msg__bubble code.tk-inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--surface-2);
+  border-radius: var(--radius-xs);
+  padding: 1px 5px;
+}
+.tk-msg__code {
+  margin: var(--sp-2) 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3);
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+}
+.tk-msg__caret {
+  display: inline-block;
+  width: 0.55em;
+  margin-left: 1px;
+  color: var(--primary);
+  font-weight: var(--fw-bold);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tk-msg__caret--blink {
+    animation: tk-blink 1s steps(1) infinite;
+  }
+}
+.tk-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 0;
+}
+.tk-thinking__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--fg-muted);
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tk-thinking__dot {
+    animation: tk-thinking 1.2s var(--ease) infinite;
+  }
+  .tk-thinking__dot:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .tk-thinking__dot:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+.tk-msg__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+}
+.tk-msg__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--fg-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 3px 9px;
+}
+
+/* ── ToolCallRow (§D.2) ────────────────────────────────────────────────────── */
+.tk-tool {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+.tk-tool + .tk-tool {
+  margin-top: var(--sp-2);
+}
+.tk-tool__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  cursor: pointer;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: var(--text-sm);
+}
+.tk-tool__row:hover {
+  background: var(--surface-2);
+}
+.tk-tool__icon {
+  font-size: var(--text-base);
+  flex: none;
+}
+.tk-tool__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--fw-medium);
+}
+.tk-tool__dur {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  flex: none;
+}
+.tk-tool__status {
+  flex: none;
+  display: inline-flex;
+}
+.tk-tool__caret {
+  color: var(--fg-muted);
+  font-size: 10px;
+  width: 12px;
+  flex: none;
+}
+.tk-tool__detail {
+  border-top: 1px solid var(--border);
+  padding: var(--sp-2) var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.tk-tool__label {
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.tk-tool__pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-2);
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--fg);
+}
+.tk-tool__pre--error {
+  color: var(--negative);
+  background: color-mix(in oklch, var(--negative) 8%, transparent);
+}
+
+/* ── UsageMeter (§D.3) ─────────────────────────────────────────────────────── */
+.tk-usage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.tk-usage__totals {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.tk-usage__total {
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.tk-usage__total-label {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  font-weight: var(--fw-medium);
+}
+.tk-usage__cost {
+  font-size: var(--text-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--positive);
+}
+.tk-usage__legend {
+  display: flex;
+  gap: var(--sp-4);
+}
+.tk-usage__leg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.tk-usage__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  flex: none;
+}
+.tk-usage__leg strong {
+  color: var(--fg);
+  font-weight: var(--fw-semibold);
+}
+.tk-usage__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--running);
+  font-weight: var(--fw-medium);
+}
+
+/* ── Composer (§D) ─────────────────────────────────────────────────────────── */
+.tk-composer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.tk-composer__row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-2);
+}
+.tk-composer__field {
+  flex: 1;
+  min-width: 0;
+}
+.tk-composer__hint {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
