@@ -20,6 +20,8 @@ export const tokens = {
     warning: "var(--warning)",
     negative: "var(--negative)",
     info: "var(--info)",
+    fgOnBrand: "var(--fg-on-brand)",
+    scrim: "var(--scrim)",
     chart: [
       "var(--chart-1)",
       "var(--chart-2)",

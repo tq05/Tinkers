@@ -186,7 +186,7 @@ export function HomeScreen() {
           onClick={() => navigate({ name: "globalAgents" })}
           style={{
             background: "var(--gradient-tinkers)",
-            color: "#fff",
+            color: "var(--fg-on-brand)",
             border: "none",
           }}
         >
@@ -200,7 +200,7 @@ export function HomeScreen() {
               status={tinkers?.status}
             />
             <div className="tk-card-grow">
-              <p className="tk-card-title" style={{ color: "#fff" }}>
+              <p className="tk-card-title" style={{ color: "var(--fg-on-brand)" }}>
                 ✨ Tinkers
               </p>
               <span style={{ fontSize: "var(--text-sm, 13px)", opacity: 0.95 }}>

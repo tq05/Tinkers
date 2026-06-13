@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tinkers — Bobbit theme spec sheet</title>
+    <!--
+      Self-contained swatch/spec sheet for the Bobbit green/black theme.
+      Values are duplicated here for display purposes only; the canonical source
+      of truth is src/client/styles/tokens.css. No external references.
+    -->
+    <style>
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: #0b0f0d;
+        color: #e8efe9;
+        padding: 32px;
+      }
+      h1 { font-size: 28px; margin: 0 0 4px; }
+      h2 { font-size: 18px; margin: 40px 0 12px; }
+      .sub { color: #8b978f; margin: 0 0 8px; font-size: 14px; }
+      .themes { display: flex; gap: 24px; flex-wrap: wrap; }
+      .panel {
+        flex: 1 1 420px;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid var(--p-border);
+        background: var(--p-bg);
+        color: var(--p-fg);
+      }
+      .panel.dark {
+        --p-bg: #0b0f0d; --p-surface: #121815; --p-surface-2: #1a221d;
+        --p-fg: #e8efe9; --p-muted: #8b978f; --p-border: #28332c;
+        --p-primary: #3fdc7f; --p-primary-fg: #04130a; --p-primary-soft: #133024;
+        --p-positive: #56d364; --p-running: #2dd4bf; --p-idle: #6e7d74;
+        --p-warning: #d8a235; --p-negative: #f85149; --p-info: #58a6ff;
+        --p-c1: #3fdc7f; --p-c2: #2dd4bf; --p-c3: #58a6ff; --p-c4: #d8a235; --p-c5: #f85149; --p-c6: #bc8cff;
+        --p-grad: linear-gradient(135deg, #1a6e4b 0%, #0d4f4a 100%);
+      }
+      .panel.light {
+        --p-bg: #f4f7f4; --p-surface: #ffffff; --p-surface-2: #e9efe9;
+        --p-fg: #0e1712; --p-muted: #4f5e55; --p-border: #d4ddd6;
+        --p-primary: #157f4b; --p-primary-fg: #ffffff; --p-primary-soft: #d8f0e2;
+        --p-positive: #157f4b; --p-running: #0d9488; --p-idle: #7c8a81;
+        --p-warning: #9a6700; --p-negative: #cf222e; --p-info: #0969da;
+        --p-c1: #157f4b; --p-c2: #0d9488; --p-c3: #0969da; --p-c4: #9a6700; --p-c5: #cf222e; --p-c6: #8250df;
+        --p-grad: linear-gradient(135deg, #1a6e4b 0%, #0d4f4a 100%);
+      }
+      .panel h3 { margin: 0 0 16px; font-size: 16px; }
+      .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+      .sw { border-radius: 10px; border: 1px solid var(--p-border); overflow: hidden; font-size: 12px; }
+      .sw .chip { height: 44px; }
+      .sw .meta { padding: 6px 8px; background: var(--p-surface); color: var(--p-fg); }
+      .sw .meta .name { font-weight: 600; }
+      .sw .meta .hex { color: var(--p-muted); font-family: ui-monospace, Menlo, monospace; }
+      .demo { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+      .btn { border: none; border-radius: 999px; padding: 9px 18px; font-weight: 600; cursor: pointer; font-size: 14px; }
+      .btn.primary { background: var(--p-primary); color: var(--p-primary-fg); }
+      .btn.secondary { background: var(--p-surface); color: var(--p-fg); border: 1px solid var(--p-border); }
+      .btn.tinkers { background: var(--p-grad); color: #ffffff; }
+      .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+      .badge .dot { width: 7px; height: 7px; border-radius: 999px; }
+      .card { margin-top: 16px; background: var(--p-surface); border: 1px solid var(--p-border); border-radius: 14px; padding: 16px; }
+      .card .inset { background: var(--p-surface-2); border-radius: 10px; padding: 12px; margin-top: 10px; color: var(--p-muted); font-size: 13px; }
+      .hero { margin-top: 16px; border-radius: 16px; padding: 20px; background: var(--p-grad); color: #ffffff; }
+      .hero .tag { display: inline-block; background: rgba(255,255,255,0.22); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>Tinkers — Bobbit theme</h1>
+    <p class="sub">Green-on-black design system. Dark is the default; a light variant is preserved. All text/role pairs target WCAG AA.</p>
+
+    <div class="themes">
+      <section class="panel dark" id="dark">
+        <h3>🌙 Dark (default)</h3>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:#0b0f0d"></div><div class="meta"><div class="name">--bg</div><div class="hex">#0b0f0d</div></div></div>
+          <div class="sw"><div class="chip" style="background:#121815"></div><div class="meta"><div class="name">--surface</div><div class="hex">#121815</div></div></div>
+          <div class="sw"><div class="chip" style="background:#1a221d"></div><div class="meta"><div class="name">--surface-2</div><div class="hex">#1a221d</div></div></div>
+          <div class="sw"><div class="chip" style="background:#e8efe9"></div><div class="meta"><div class="name">--fg</div><div class="hex">#e8efe9</div></div></div>
+          <div class="sw"><div class="chip" style="background:#8b978f"></div><div class="meta"><div class="name">--fg-muted</div><div class="hex">#8b978f</div></div></div>
+          <div class="sw"><div class="chip" style="background:#28332c"></div><div class="meta"><div class="name">--border</div><div class="hex">#28332c</div></div></div>
+          <div class="sw"><div class="chip" style="background:#3fdc7f"></div><div class="meta"><div class="name">--primary</div><div class="hex">#3fdc7f</div></div></div>
+          <div class="sw"><div class="chip" style="background:#133024"></div><div class="meta"><div class="name">--primary-soft</div><div class="hex">#133024</div></div></div>
+          <div class="sw"><div class="chip" style="background:#56d364"></div><div class="meta"><div class="name">--positive</div><div class="hex">#56d364</div></div></div>
+          <div class="sw"><div class="chip" style="background:#2dd4bf"></div><div class="meta"><div class="name">--running</div><div class="hex">#2dd4bf</div></div></div>
+          <div class="sw"><div class="chip" style="background:#6e7d74"></div><div class="meta"><div class="name">--idle</div><div class="hex">#6e7d74</div></div></div>
+          <div class="sw"><div class="chip" style="background:#d8a235"></div><div class="meta"><div class="name">--warning</div><div class="hex">#d8a235</div></div></div>
+          <div class="sw"><div class="chip" style="background:#f85149"></div><div class="meta"><div class="name">--negative</div><div class="hex">#f85149</div></div></div>
+          <div class="sw"><div class="chip" style="background:#58a6ff"></div><div class="meta"><div class="name">--info</div><div class="hex">#58a6ff</div></div></div>
+          <div class="sw"><div class="chip" style="background:#3fdc7f"></div><div class="meta"><div class="name">--chart-1</div><div class="hex">#3fdc7f</div></div></div>
+          <div class="sw"><div class="chip" style="background:#2dd4bf"></div><div class="meta"><div class="name">--chart-2</div><div class="hex">#2dd4bf</div></div></div>
+          <div class="sw"><div class="chip" style="background:#58a6ff"></div><div class="meta"><div class="name">--chart-3</div><div class="hex">#58a6ff</div></div></div>
+          <div class="sw"><div class="chip" style="background:#d8a235"></div><div class="meta"><div class="name">--chart-4</div><div class="hex">#d8a235</div></div></div>
+          <div class="sw"><div class="chip" style="background:#f85149"></div><div class="meta"><div class="name">--chart-5</div><div class="hex">#f85149</div></div></div>
+          <div class="sw"><div class="chip" style="background:#bc8cff"></div><div class="meta"><div class="name">--chart-6</div><div class="hex">#bc8cff</div></div></div>
+        </div>
+        <div class="demo">
+          <button class="btn primary">Primary</button>
+          <button class="btn secondary">Secondary</button>
+          <button class="btn tinkers">✨ Tinkers</button>
+          <span class="badge" style="background:color-mix(in oklch,#56d364 14%,transparent);color:#56d364"><span class="dot" style="background:#56d364"></span>Done</span>
+          <span class="badge" style="background:color-mix(in oklch,#2dd4bf 14%,transparent);color:#2dd4bf"><span class="dot" style="background:#2dd4bf"></span>Running</span>
+          <span class="badge" style="background:color-mix(in oklch,#f85149 14%,transparent);color:#f85149"><span class="dot" style="background:#f85149"></span>Error</span>
+        </div>
+        <div class="card">Card surface<div class="inset">Inset / nested surface — secondary text</div></div>
+        <div class="hero"><span class="tag">God-mode</span><div style="margin-top:8px;font-size:18px;font-weight:700">✨ Tinkers hero — white on deep green→teal (AA ≥ 6.2:1)</div></div>
+      </section>
+
+      <section class="panel light" id="light">
+        <h3>☀️ Light</h3>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:#f4f7f4"></div><div class="meta"><div class="name">--bg</div><div class="hex">#f4f7f4</div></div></div>
+          <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="meta"><div class="name">--surface</div><div class="hex">#ffffff</div></div></div>
+          <div class="sw"><div class="chip" style="background:#e9efe9"></div><div class="meta"><div class="name">--surface-2</div><div class="hex">#e9efe9</div></div></div>
+          <div class="sw"><div class="chip" style="background:#0e1712"></div><div class="meta"><div class="name">--fg</div><div class="hex">#0e1712</div></div></div>
+          <div class="sw"><div class="chip" style="background:#4f5e55"></div><div class="meta"><div class="name">--fg-muted</div><div class="hex">#4f5e55</div></div></div>
+          <div class="sw"><div class="chip" style="background:#d4ddd6"></div><div class="meta"><div class="name">--border</div><div class="hex">#d4ddd6</div></div></div>
+          <div class="sw"><div class="chip" style="background:#157f4b"></div><div class="meta"><div class="name">--primary</div><div class="hex">#157f4b</div></div></div>
+          <div class="sw"><div class="chip" style="background:#d8f0e2"></div><div class="meta"><div class="name">--primary-soft</div><div class="hex">#d8f0e2</div></div></div>
+          <div class="sw"><div class="chip" style="background:#157f4b"></div><div class="meta"><div class="name">--positive</div><div class="hex">#157f4b</div></div></div>
+          <div class="sw"><div class="chip" style="background:#0d9488"></div><div class="meta"><div class="name">--running</div><div class="hex">#0d9488</div></div></div>
+          <div class="sw"><div class="chip" style="background:#7c8a81"></div><div class="meta"><div class="name">--idle</div><div class="hex">#7c8a81</div></div></div>
+          <div class="sw"><div class="chip" style="background:#9a6700"></div><div class="meta"><div class="name">--warning</div><div class="hex">#9a6700</div></div></div>
+          <div class="sw"><div class="chip" style="background:#cf222e"></div><div class="meta"><div class="name">--negative</div><div class="hex">#cf222e</div></div></div>
+          <div class="sw"><div class="chip" style="background:#0969da"></div><div class="meta"><div class="name">--info</div><div class="hex">#0969da</div></div></div>
+          <div class="sw"><div class="chip" style="background:#157f4b"></div><div class="meta"><div class="name">--chart-1</div><div class="hex">#157f4b</div></div></div>
+          <div class="sw"><div class="chip" style="background:#0d9488"></div><div class="meta"><div class="name">--chart-2</div><div class="hex">#0d9488</div></div></div>
+          <div class="sw"><div class="chip" style="background:#0969da"></div><div class="meta"><div class="name">--chart-3</div><div class="hex">#0969da</div></div></div>
+          <div class="sw"><div class="chip" style="background:#9a6700"></div><div class="meta"><div class="name">--chart-4</div><div class="hex">#9a6700</div></div></div>
+          <div class="sw"><div class="chip" style="background:#cf222e"></div><div class="meta"><div class="name">--chart-5</div><div class="hex">#cf222e</div></div></div>
+          <div class="sw"><div class="chip" style="background:#8250df"></div><div class="meta"><div class="name">--chart-6</div><div class="hex">#8250df</div></div></div>
+        </div>
+        <div class="demo">
+          <button class="btn primary">Primary</button>
+          <button class="btn secondary">Secondary</button>
+          <button class="btn tinkers">✨ Tinkers</button>
+          <span class="badge" style="background:color-mix(in oklch,#157f4b 14%,transparent);color:#157f4b"><span class="dot" style="background:#157f4b"></span>Done</span>
+          <span class="badge" style="background:color-mix(in oklch,#0d9488 14%,transparent);color:#0d9488"><span class="dot" style="background:#0d9488"></span>Running</span>
+          <span class="badge" style="background:color-mix(in oklch,#cf222e 14%,transparent);color:#cf222e"><span class="dot" style="background:#cf222e"></span>Error</span>
+        </div>
+        <div class="card">Card surface<div class="inset">Inset / nested surface — secondary text</div></div>
+        <div class="hero"><span class="tag">God-mode</span><div style="margin-top:8px;font-size:18px;font-weight:700">✨ Tinkers hero — white on deep green→teal (AA ≥ 6.2:1)</div></div>
+      </section>
+    </div>
+
+    <h2>Green semantics — avoiding ambiguity</h2>
+    <p class="sub">running = teal + motion · positive = green + static · primary = green + interactive. No two co-located green meanings collide.</p>
+  </body>
+</html>

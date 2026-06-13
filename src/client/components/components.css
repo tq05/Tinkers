@@ -64,7 +64,7 @@
 }
 .tk-btn--danger {
   background: var(--negative);
-  color: #fff;
+  color: var(--fg-on-brand);
 }
 .tk-btn--danger:hover:not(:disabled) {
   filter: brightness(1.05);
@@ -72,7 +72,7 @@
 }
 .tk-btn--tinkers {
   background: var(--gradient-tinkers);
-  color: #fff;
+  color: var(--fg-on-brand);
   box-shadow: var(--shadow-glow-tinkers);
 }
 .tk-btn--tinkers:hover:not(:disabled) {
@@ -137,7 +137,7 @@
   align-items: center;
   justify-content: center;
   font-weight: var(--fw-semibold);
-  color: #fff;
+  color: var(--fg-on-brand);
   user-select: none;
   flex: none;
 }
@@ -298,7 +298,7 @@
 .tk-select {
   appearance: none;
   cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23726f88' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b978f' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 32px;
@@ -308,7 +308,7 @@
 .tk-modal__scrim {
   position: fixed;
   inset: 0;
-  background: rgba(20, 18, 30, 0.4);
+  background: var(--scrim);
   backdrop-filter: blur(4px);
   display: flex;
   z-index: 1000;
