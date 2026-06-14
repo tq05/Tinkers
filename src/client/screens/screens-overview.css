@@ -196,7 +196,7 @@
   overflow: hidden;
   border-radius: var(--radius-xl);
   padding: var(--sp-7);
-  color: #fff;
+  color: var(--fg-on-brand);
   background: var(--gradient-tinkers);
   box-shadow: var(--shadow-glow-tinkers);
   display: flex;
@@ -222,7 +222,7 @@
   gap: 6px;
   padding: 2px var(--sp-3);
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.22);
+  background: color-mix(in oklch, var(--fg-on-brand) 22%, transparent);
   font-size: var(--text-xs, 12px);
   font-weight: 600;
   margin-bottom: var(--sp-3);
@@ -247,7 +247,7 @@
   width: 120px;
   height: 120px;
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.16);
+  background: color-mix(in oklch, var(--fg-on-brand) 16%, transparent);
   flex: none;
 }
 

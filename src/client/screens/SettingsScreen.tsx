@@ -59,7 +59,7 @@ export function SettingsScreen() {
   const [defaultPalette, setDefaultPalette] = useState<string>("var(--chart-1)");
 
   // Appearance
-  const [theme, setTheme] = useState<Theme>("system");
+  const [theme, setTheme] = useState<Theme>("dark");
   const [reducedMotion, setReducedMotion] = useState(false);
   const [density, setDensity] = useState<Density>("comfortable");
 
@@ -189,7 +189,7 @@ export function SettingsScreen() {
               <div className="tk-field">
                 <span className="tk-field__label">Theme</span>
                 <div className="tk-segmented" role="radiogroup" aria-label="Theme">
-                  {(["light", "dark", "system"] as Theme[]).map((t) => (
+                  {(["dark", "light", "system"] as Theme[]).map((t) => (
                     <button
                       key={t}
                       type="button"

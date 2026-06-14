@@ -1,34 +1,41 @@
-/* Tinkers design tokens — §A. CSS custom properties on :root + dark override. */
+/* Tinkers design tokens — Bobbit green/black theme.
+   §A. CSS custom properties. DARK is the default (`:root`); `[data-theme="light"]`
+   is the light variant; `[data-theme="dark"]` is defined identical to `:root` so an
+   explicit dark selection still resolves. All color values target WCAG AA. */
 
 :root {
-  /* A.1 Palette */
-  --bg: #f7f6fb;
-  --surface: #ffffff;
-  --surface-2: #f1eff8;
-  --fg: #2a2740;
-  --fg-muted: #726f88;
-  --border: #e6e3f0;
-  --primary: #7c4dff;
-  --primary-fg: #ffffff;
-  --primary-soft: #ece3ff;
-  --accent: #ffb24d;
-  --accent-2: #33c4d6;
+  /* A.1 Palette — DARK Bobbit (default) */
+  --bg: #0b0f0d;
+  --surface: #121815;
+  --surface-2: #1a221d;
+  --fg: #e8efe9;
+  --fg-muted: #8b978f;
+  --border: #28332c;
+  --primary: #3fdc7f;
+  --primary-fg: #04130a;
+  --primary-soft: #133024;
+  --accent: #7ee787;
+  --accent-2: #2dd4bf;
 
   /* Semantic / status */
-  --positive: #22b07d;
-  --running: #33c4d6;
-  --idle: #9aa0b4;
-  --warning: #f2a93b;
-  --negative: #f0506b;
-  --info: #4d8cff;
+  --positive: #56d364;
+  --running: #2dd4bf;
+  --idle: #6e7d74;
+  --warning: #d8a235;
+  --negative: #f85149;
+  --info: #58a6ff;
 
   /* Categorical / avatar palette */
-  --chart-1: #7c4dff;
-  --chart-2: #33c4d6;
-  --chart-3: #ffb24d;
-  --chart-4: #f0506b;
-  --chart-5: #22b07d;
-  --chart-6: #4d8cff;
+  --chart-1: #3fdc7f;
+  --chart-2: #2dd4bf;
+  --chart-3: #58a6ff;
+  --chart-4: #d8a235;
+  --chart-5: #f85149;
+  --chart-6: #bc8cff;
+
+  /* Text/icons on saturated brand surfaces (gradient hero/dock); modal scrim */
+  --fg-on-brand: #ffffff;
+  --scrim: rgba(11, 15, 13, 0.5);
 
   /* A.2 Radii */
   --radius-xs: 6px;
@@ -75,50 +82,89 @@
   --fw-bold: 700;
 
   /* A.5 Elevation / shadows */
-  --shadow-sm: 0 1px 2px rgba(42, 39, 64, 0.06), 0 1px 3px rgba(42, 39, 64, 0.05);
-  --shadow-md: 0 4px 12px rgba(42, 39, 64, 0.08), 0 2px 4px rgba(42, 39, 64, 0.04);
-  --shadow-lg: 0 12px 32px rgba(42, 39, 64, 0.12), 0 4px 8px rgba(42, 39, 64, 0.06);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.3);
   --shadow-glow-running: 0 0 0 3px color-mix(in oklch, var(--running) 22%, transparent);
   --shadow-glow-tinkers: 0 8px 28px color-mix(in oklch, var(--accent) 40%, transparent);
+
+  /* Tinkers signature gradient — deep green→teal. Stops are intentionally darkened
+     (vs the bright --primary/--accent) so white --fg-on-brand text on the hero/dock
+     stays WCAG AA: white on #1a6e4b = 6.2:1, on #0d4f4a = 9.4:1 (both ≥ 4.5:1). */
+  --gradient-tinkers: linear-gradient(135deg, #1a6e4b 0%, #0d4f4a 100%);
 
   /* A.6 Motion */
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
   --dur-fast: 120ms;
   --dur: 200ms;
   --dur-slow: 360ms;
-
-  /* Tinkers signature gradient */
-  --gradient-tinkers: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
 }
 
+/* Explicit dark selection — identical to :root (the default). */
 [data-theme="dark"] {
-  --bg: #15131f;
-  --surface: #1e1b2b;
-  --surface-2: #272338;
-  --fg: #eceaf4;
-  --fg-muted: #a09dba;
-  --border: #322e44;
-  --primary: #9a78ff;
+  --bg: #0b0f0d;
+  --surface: #121815;
+  --surface-2: #1a221d;
+  --fg: #e8efe9;
+  --fg-muted: #8b978f;
+  --border: #28332c;
+  --primary: #3fdc7f;
+  --primary-fg: #04130a;
+  --primary-soft: #133024;
+  --accent: #7ee787;
+  --accent-2: #2dd4bf;
+
+  --positive: #56d364;
+  --running: #2dd4bf;
+  --idle: #6e7d74;
+  --warning: #d8a235;
+  --negative: #f85149;
+  --info: #58a6ff;
+
+  --chart-1: #3fdc7f;
+  --chart-2: #2dd4bf;
+  --chart-3: #58a6ff;
+  --chart-4: #d8a235;
+  --chart-5: #f85149;
+  --chart-6: #bc8cff;
+
+  --fg-on-brand: #ffffff;
+  --scrim: rgba(11, 15, 13, 0.5);
+}
+
+/* Light variant — Bobbit green on off-white. */
+[data-theme="light"] {
+  --bg: #f4f7f4;
+  --surface: #ffffff;
+  --surface-2: #e9efe9;
+  --fg: #0e1712;
+  --fg-muted: #4f5e55;
+  --border: #d4ddd6;
+  --primary: #157f4b;
   --primary-fg: #ffffff;
-  --primary-soft: #2e2750;
-  --accent: #ffbe66;
-  --accent-2: #45d2e3;
+  --primary-soft: #d8f0e2;
+  --accent: #157f4b;
+  --accent-2: #0d9488;
 
-  --positive: #34c08e;
-  --running: #45d2e3;
-  --idle: #6f6c87;
-  --warning: #f5b955;
-  --negative: #ff6680;
-  --info: #6aa1ff;
+  --positive: #157f4b;
+  --running: #0d9488;
+  --idle: #7c8a81;
+  --warning: #9a6700;
+  --negative: #cf222e;
+  --info: #0969da;
 
-  --chart-1: #9a78ff;
-  --chart-2: #45d2e3;
-  --chart-3: #ffbe66;
-  --chart-4: #ff6680;
-  --chart-5: #34c08e;
-  --chart-6: #6aa1ff;
+  --chart-1: #157f4b;
+  --chart-2: #0d9488;
+  --chart-3: #0969da;
+  --chart-4: #9a6700;
+  --chart-5: #cf222e;
+  --chart-6: #8250df;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --fg-on-brand: #ffffff;
+  --scrim: rgba(11, 15, 13, 0.4);
+
+  /* Neutral (green-black) low-opacity shadows, re-tinted from the old violet. */
+  --shadow-sm: 0 1px 2px rgba(11, 15, 13, 0.06), 0 1px 3px rgba(11, 15, 13, 0.05);
+  --shadow-md: 0 4px 12px rgba(11, 15, 13, 0.08), 0 2px 4px rgba(11, 15, 13, 0.04);
+  --shadow-lg: 0 12px 32px rgba(11, 15, 13, 0.12), 0 4px 8px rgba(11, 15, 13, 0.06);
 }

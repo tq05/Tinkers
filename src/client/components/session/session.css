@@ -172,7 +172,7 @@
     display: block;
     position: absolute;
     inset: 0;
-    background: rgba(20, 18, 30, 0.28);
+    background: var(--scrim);
     backdrop-filter: blur(2px);
     z-index: 15;
   }

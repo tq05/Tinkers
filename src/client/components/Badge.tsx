@@ -14,7 +14,7 @@ export function Badge({ kind = "info", variant = "soft", dot = false, children }
   const color = statusColor(kind);
   let style: CSSProperties;
   if (variant === "solid") {
-    style = { background: color, color: "#fff" };
+    style = { background: color, color: "var(--fg-on-brand)" };
   } else if (variant === "outline") {
     style = { color, border: `1px solid ${color}`, background: "transparent" };
   } else {
